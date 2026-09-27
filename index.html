@@ -253,6 +253,17 @@ document.addEventListener("keydown", function(event) {
   }
 });
   
+  canvas.addEventListener("click", function() {
+  if (health <= 0) {
+    health = 3;
+    score = 0;
+    enemies.length = 0;
+    bullets.length = 0;
+    explosions.length = 0;
+    gameLoop();
+  }
+});
+  
 gameLoop();
 </script>
 
