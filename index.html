@@ -80,6 +80,9 @@ function spawnEnemy() {
         width: 50,
         height: 90,
         speed: 3
+      speed: 3,
+health: 3
+      
     });
 }
 
@@ -182,8 +185,12 @@ function drawBullets() {
     size: 10,
     life: 20
 });
-        enemies.splice(j, 1);
-        score += 10;
+       enemy.health -= 1;
+
+if (enemy.health <= 0) {
+  enemies.splice(j, 1);
+  score += 10;
+}
         bullets.splice(i, 1);
         hit = true;
         break;
