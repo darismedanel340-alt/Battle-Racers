@@ -91,12 +91,15 @@ strong: isStrong,
     });
 }
 function spawnPowerUp() {
-powerUps.push({
+
+  const type = Math.random() < 0.5 ? "rapid" : "health";
+  powerUps.push({
   x: Math.random() * (canvas.width - 30),
   y: -30,
   width: 30,
   height: 30,
-  speed: 3
+  speed: 3,
+type: type
 });
 }
   
@@ -274,7 +277,7 @@ if (enemy.health <= 0) {
 for (let i = powerUps.length - 1; i >= 0; i--) {
   let powerUp = powerUps[i];
   powerUp.y += powerUp.speed;
-  ctx.fillStyle = "yellow";
+  ctx.fillStyle = powerUp.type === "rapid" ? "yellow" : "lime";
 ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
   if (
   powerUp.x < car.x + car.width &&
@@ -282,8 +285,12 @@ ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
   powerUp.y < car.y + car.height &&
   powerUp.y + powerUp.height > car.y
 ) {
+  if (powerUp.type === "rapid") {
   rapidFire = true;
   rapidFireTimer = 300;
+} else if (powerUp.type === "health") {
+  health++;
+}
   powerUps.splice(i, 1);
 }
 }
