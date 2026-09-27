@@ -34,7 +34,7 @@ canvas {
 
 <div id="title">🏁 BATTLE RACERS 🏁</div>
 <canvas id="game"></canvas>
-
+<button id="fireButton">🔥 FIRE</button>
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -87,7 +87,7 @@ function shoot() {
     height: 15
   });
 }
-
+document.getElementById("fireButton").addEventListener("click", shoot);
 function drawBullets() {
   ctx.fillStyle = "yellow";
 
