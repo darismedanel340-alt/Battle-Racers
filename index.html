@@ -279,8 +279,16 @@ for (let i = powerUps.length - 1; i >= 0; i--) {
   powerUp.y += powerUp.speed;
   ctx.fillStyle = powerUp.type === "rapid" ? "yellow" : "lime";
 ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
-  if (
-  powerUp.x < car.x + car.width &&
+  ctx.fillStyle = "black";
+ctx.font = "20px Arial";
+ctx.textAlign = "center";
+ctx.fillText(
+  powerUp.type === "rapid" ? "⚡" : "❤",
+  powerUp.x + powerUp.width / 2,
+  powerUp.y + 22
+);
+   if (
+    powerUp.x < car.x + car.width &&
   powerUp.x + powerUp.width > car.x &&
   powerUp.y < car.y + car.height &&
   powerUp.y + powerUp.height > car.y
