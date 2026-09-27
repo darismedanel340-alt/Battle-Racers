@@ -68,6 +68,8 @@ const car = {
 const bullets = [];
 let score = 0;
   let health = 3;
+  let level = 1;
+  let gameStarted = false;
   
   const enemies = [];
   
@@ -190,6 +192,7 @@ function drawBullets() {
 if (enemy.health <= 0) {
   enemies.splice(j, 1);
   score += enemy.strong ? 30 : 10;
+  level = Math.floor(score / 100) + 1;
 }
         bullets.splice(i, 1);
         hit = true;
@@ -226,6 +229,19 @@ document.addEventListener("touchmove", function(e) {
 }, { passive: false });
 
 function gameLoop() {
+  if (!gameStarted) {
+  drawRoad();
+
+  ctx.fillStyle = "white";
+  ctx.font = "bold 48px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("BATTLE RACERS", canvas.width / 2, canvas.height / 2 - 60);
+
+  ctx.font = "bold 30px Arial";
+  ctx.fillText("TAP TO PLAY", canvas.width / 2, canvas.height / 2 + 20);
+
+  return;
+}
   drawRoad();
   drawEnemies();
   drawExplosions();
@@ -236,6 +252,7 @@ function gameLoop() {
 ctx.font = "bold 24px Arial";
 ctx.fillText("SCORE: " + score, 20, 50);
   ctx.fillText("HEALTH: " + health, 20, 80);
+  ctx.fillText("LEVEL: " + level, 20, 110);
 
 if (health <= 0) {
   ctx.fillStyle = "white";
@@ -261,7 +278,13 @@ document.addEventListener("keydown", function(event) {
 });
   
   canvas.addEventListener("click", function() {
-  if (health <= 0) {
+  if (!gameStarted) {
+  gameStarted = true;
+  gameLoop();
+  return;
+}
+    
+    if (health <= 0) {
     health = 3;
     score = 0;
     enemies.length = 0;
