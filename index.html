@@ -84,7 +84,7 @@ function spawnEnemy() {
         y: -100,
         width: 50,
         height: 90,
-        speed: 3,
+       speed: 3 + Math.min(score / 100, 5),
         health: isStrong ? 3 : 1,
 strong: isStrong,
       
