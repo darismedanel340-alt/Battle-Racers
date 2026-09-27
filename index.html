@@ -189,7 +189,7 @@ function drawBullets() {
 
 if (enemy.health <= 0) {
   enemies.splice(j, 1);
-  score += 10;
+  score += enemy.strong ? 30 : 10;
 }
         bullets.splice(i, 1);
         hit = true;
