@@ -139,12 +139,20 @@ function drawRoad() {
 function drawCar() {
   ctx.fillStyle = "red";
   ctx.fillRect(car.x, car.y, car.width, car.height);
+  ctx.fillStyle = "black";
+ctx.fillRect(car.x - 5, car.y + 15, 5, 20);
+ctx.fillRect(car.x + car.width, car.y + 15, 5, 20);
+ctx.fillRect(car.x - 5, car.y + 55, 5, 20);
+ctx.fillRect(car.x + car.width, car.y + 55, 5, 20);
 
   ctx.fillStyle = "black";
   ctx.fillRect(car.x + 10, car.y + 15, 30, 25);
 
   ctx.fillStyle = "yellow";
   ctx.fillRect(car.x + 20, car.y - 12, 10, 20);
+  ctx.fillStyle = "white";
+ctx.fillRect(car.x + 5, car.y + 3, 10, 6);
+ctx.fillRect(car.x + car.width - 15, car.y + 3, 10, 6);
 }
 
 function shoot() {
