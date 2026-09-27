@@ -74,14 +74,15 @@ let score = 0;
 const explosions = [];
   
 function spawnEnemy() {
-    enemies.push({
+ const isStrong = Math.random() < 0.3;   
+  enemies.push({
         x: Math.random() * (canvas.width - 50),
         y: -100,
         width: 50,
         height: 90,
-        speed: 3
-      speed: 3,
-health: 3
+        speed: 3,
+        health: isStrong ? 3 : 1,
+strong: isStrong,
       
     });
 }
@@ -110,7 +111,7 @@ if (
     continue;
 }
 
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = enemy.strong ? "red" : "blue";
         ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
 
         if (enemy.y > canvas.height) {
