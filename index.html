@@ -114,7 +114,16 @@ if (
 
         ctx.fillStyle = enemy.strong ? "red" : "blue";
         ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-
+      ctx.fillStyle = "black";
+ctx.fillRect(enemy.x - 5, enemy.y + 15, 5, 20);
+ctx.fillRect(enemy.x + enemy.width, enemy.y + 15, 5, 20);
+ctx.fillRect(enemy.x - 5, enemy.y + 55, 5, 20);
+ctx.fillRect(enemy.x + enemy.width, enemy.y + 55, 5, 20);
+ctx.fillStyle = "black";
+ctx.fillRect(enemy.x + 10, enemy.y + 25, 30, 25);
+      ctx.fillStyle = "white";
+ctx.fillRect(enemy.x + 5, enemy.y + 3, 10, 6);
+ctx.fillRect(enemy.x + enemy.width - 15, enemy.y + 3, 10, 6);
         if (enemy.y > canvas.height) {
             enemies.splice(i, 1);
         }
