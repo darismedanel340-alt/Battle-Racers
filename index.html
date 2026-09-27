@@ -67,6 +67,7 @@ const car = {
 
 const bullets = [];
 let score = 0;
+  let health = 3;
   
   const enemies = [];
   
@@ -88,6 +89,18 @@ function drawEnemies() {
         let enemy = enemies[i];
 
         enemy.y += enemy.speed;
+      enemy.y += enemy.speed;
+
+if (
+    enemy.x < car.x + car.width &&
+    enemy.x + enemy.width > car.x &&
+    enemy.y < car.y + car.height &&
+    enemy.y + enemy.height > car.y
+) {
+    health -= 1;
+    enemies.splice(i, 1);
+    continue;
+}
 
         ctx.fillStyle = "blue";
         ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
@@ -210,6 +223,7 @@ function gameLoop() {
   ctx.fillStyle = "white";
 ctx.font = "bold 24px Arial";
 ctx.fillText("SCORE: " + score, 20, 50);
+  ctx.fillText("HEALTH: " + health, 20, 80);
 
   requestAnimationFrame(gameLoop);
 }
