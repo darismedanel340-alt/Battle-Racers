@@ -70,11 +70,13 @@ let score = 0;
   let health = 3;
   let level = 1;
   let gameStarted = false;
+  let rapidFire = false;
+let rapidFireTimer = 0;
   
   const enemies = [];
   
 const explosions = [];
-  
+  const powerUps = [];
 function spawnEnemy() {
  const isStrong = Math.random() < 0.3;   
   enemies.push({
@@ -88,8 +90,18 @@ strong: isStrong,
       
     });
 }
-
+function spawnPowerUp() {
+powerUps.push({
+  x: Math.random() * (canvas.width - 30),
+  y: -30,
+  width: 30,
+  height: 30,
+  speed: 3
+});
+}
+  
 setInterval(spawnEnemy, 1500);
+  setInterval(spawnPowerUp, 8000);
 function drawEnemies() {
     for (let i = enemies.length - 1; i >= 0; i--) {
         let enemy = enemies[i];
@@ -178,6 +190,17 @@ function shoot() {
     width: 6,
     height: 15
   });
+
+  if (rapidFire) {
+    setTimeout(() => {
+      bullets.push({
+        x: car.x + car.width / 2 - 3,
+        y: car.y,
+        width: 6,
+        height: 15
+      });
+    }, 100);
+  }
 }
 document.getElementById("fireButton").addEventListener("click", shoot);
 function drawBullets() {
@@ -246,6 +269,25 @@ if (enemy.health <= 0) {
         }
     }
 }
+
+  function drawPowerUps() {
+for (let i = powerUps.length - 1; i >= 0; i--) {
+  let powerUp = powerUps[i];
+  powerUp.y += powerUp.speed;
+  ctx.fillStyle = "yellow";
+ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+  if (
+  powerUp.x < car.x + car.width &&
+  powerUp.x + powerUp.width > car.x &&
+  powerUp.y < car.y + car.height &&
+  powerUp.y + powerUp.height > car.y
+) {
+  rapidFire = true;
+  rapidFireTimer = 300;
+  powerUps.splice(i, 1);
+}
+}
+}
 document.addEventListener("touchmove", function(e) {
   const touch = e.touches[0];
   car.x = touch.clientX - car.width / 2;
@@ -265,12 +307,20 @@ function gameLoop() {
   ctx.fillText("TAP TO PLAY", canvas.width / 2, canvas.height / 2 + 20);
 
   return;
+    }
+if (rapidFire) {
+  rapidFireTimer--;
+
+  if (rapidFireTimer <= 0) {
+    rapidFire = false;
+  }
 }
   drawRoad();
   drawEnemies();
   drawExplosions();
   drawCar();
   drawBullets();
+  drawPowerUps();
   
   ctx.fillStyle = "white";
 ctx.font = "bold 24px Arial";
