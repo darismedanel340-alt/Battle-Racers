@@ -124,6 +124,13 @@ ctx.fillRect(enemy.x + 10, enemy.y + 25, 30, 25);
       ctx.fillStyle = "white";
 ctx.fillRect(enemy.x + 5, enemy.y + 3, 10, 6);
 ctx.fillRect(enemy.x + enemy.width - 15, enemy.y + 3, 10, 6);
+      if (enemy.strong) {
+  ctx.fillStyle = "black";
+  ctx.fillRect(enemy.x, enemy.y - 10, 50, 6);
+
+  ctx.fillStyle = "lime";
+  ctx.fillRect(enemy.x, enemy.y - 10, (enemy.health / 3) * 50, 6);
+}
         if (enemy.y > canvas.height) {
             enemies.splice(i, 1);
         }
