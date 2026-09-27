@@ -69,7 +69,9 @@ const bullets = [];
 let score = 0;
   
   const enemies = [];
-
+  
+const explosions = [];
+  
 function spawnEnemy() {
     enemies.push({
         x: Math.random() * (canvas.width - 50),
@@ -156,6 +158,12 @@ function drawBullets() {
         bullet.y < enemy.y + enemy.height &&
         bullet.y + bullet.height > enemy.y
       ) {
+        explosions.push({
+    x: enemy.x + enemy.width / 2,
+    y: enemy.y + enemy.height / 2,
+    size: 10,
+    life: 20
+});
         enemies.splice(j, 1);
         score += 10;
         bullets.splice(i, 1);
@@ -169,6 +177,23 @@ function drawBullets() {
     }
   }
 }
+  function drawExplosions() {
+    for (let i = explosions.length - 1; i >= 0; i--) {
+        let explosion = explosions[i];
+
+        ctx.beginPath();
+        ctx.arc(explosion.x, explosion.y, explosion.size, 0, Math.PI * 2);
+        ctx.fillStyle = "orange";
+        ctx.fill();
+
+        explosion.size += 2;
+        explosion.life--;
+
+        if (explosion.life <= 0) {
+            explosions.splice(i, 1);
+        }
+    }
+}
 document.addEventListener("touchmove", function(e) {
   const touch = e.touches[0];
   car.x = touch.clientX - car.width / 2;
@@ -178,6 +203,7 @@ document.addEventListener("touchmove", function(e) {
 function gameLoop() {
   drawRoad();
   drawEnemies();
+  drawExplosions();
   drawCar();
   drawBullets();
   
