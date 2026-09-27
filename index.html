@@ -297,7 +297,7 @@ ctx.fillText(
   rapidFire = true;
   rapidFireTimer = 300;
 } else if (powerUp.type === "health") {
-  health++;
+  health = Math.min(health + 1, 5);
 }
   powerUps.splice(i, 1);
 }
@@ -350,7 +350,7 @@ if (health <= 0) {
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   
   ctx.font = "bold 24px Arial";
-ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 50);
+ctx.fillText("Tap to Restart", canvas.width / 2, canvas.height / 2 + 50);
   return;
 }
   requestAnimationFrame(gameLoop);
@@ -379,6 +379,7 @@ document.addEventListener("keydown", function(event) {
     enemies.length = 0;
     bullets.length = 0;
     explosions.length = 0;
+      powerUps.length = 0;
     gameLoop();
   }
 });
