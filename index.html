@@ -66,7 +66,8 @@ const car = {
 };
 
 const bullets = [];
-
+let score = 0;
+  
   const enemies = [];
 
 function spawnEnemy() {
@@ -156,6 +157,7 @@ function drawBullets() {
         bullet.y + bullet.height > enemy.y
       ) {
         enemies.splice(j, 1);
+        score += 10;
         bullets.splice(i, 1);
         hit = true;
         break;
@@ -178,6 +180,10 @@ function gameLoop() {
   drawEnemies();
   drawCar();
   drawBullets();
+  
+  ctx.fillStyle = "white";
+ctx.font = "bold 24px Arial";
+ctx.fillText("SCORE: " + score, 20, 50);
 
   requestAnimationFrame(gameLoop);
 }
