@@ -101,7 +101,7 @@ if (
   
  if (health <= 0) {
   health = 0;
-  alert("GAME OVER!");
+   
 }
     enemies.splice(i, 1);
     continue;
@@ -230,6 +230,9 @@ ctx.font = "bold 24px Arial";
 ctx.fillText("SCORE: " + score, 20, 50);
   ctx.fillText("HEALTH: " + health, 20, 80);
 
+  if (health <= 0) {
+  return;
+}
   requestAnimationFrame(gameLoop);
 }
 
