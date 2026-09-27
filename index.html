@@ -235,11 +235,24 @@ if (health <= 0) {
   ctx.font = "bold 48px Arial";
   ctx.textAlign = "center";
   ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+  
+  ctx.font = "bold 24px Arial";
+ctx.fillText("Press R to Restart", canvas.width / 2, canvas.height / 2 + 50);
   return;
 }
   requestAnimationFrame(gameLoop);
 }
-
+document.addEventListener("keydown", function(event) {
+  if (event.key.toLowerCase() === "r" && health <= 0) {
+    health = 3;
+    score = 0;
+    enemies.length = 0;
+    bullets.length = 0;
+    explosions.length = 0;
+    gameLoop();
+  }
+});
+  
 gameLoop();
 </script>
 
