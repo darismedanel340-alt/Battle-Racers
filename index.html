@@ -230,7 +230,11 @@ ctx.font = "bold 24px Arial";
 ctx.fillText("SCORE: " + score, 20, 50);
   ctx.fillText("HEALTH: " + health, 20, 80);
 
-  if (health <= 0) {
+if (health <= 0) {
+  ctx.fillStyle = "white";
+  ctx.font = "bold 48px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
   return;
 }
   requestAnimationFrame(gameLoop);
