@@ -227,6 +227,7 @@ function shoot() {
 document.getElementById("fireButton").addEventListener("click", shoot);
   document.getElementById("upgradeButton").addEventListener("click", function() {
  let upgradeCost = Math.floor(100 * Math.pow(1.8, carUpgradeLevel - 1));
+    document.getElementById("upgradeButton").textContent = "⬆ UPGRADE " + upgradeCost + " COINS";
     if (carUpgradeLevel < 10 && coins >= upgradeCost) {
     coins -= upgradeCost;
     carUpgradeLevel += 1;
@@ -415,7 +416,7 @@ document.addEventListener("keydown", function(event) {
     gameLoop();
   }
 });
-  
+  document.getElementById("upgradeButton").textContent = "⬆ UPGRADE 100 COINS";
 gameLoop();
 </script>
 
