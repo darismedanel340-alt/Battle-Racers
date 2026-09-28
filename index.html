@@ -89,6 +89,7 @@ let score = 0;
 let rapidFireTimer = 0;
   let coins = 0;
   let carUpgradeLevel = 1;
+  let bulletSpeed = 10;
   
   const enemies = [];
   
@@ -228,6 +229,7 @@ document.getElementById("fireButton").addEventListener("click", shoot);
     coins -= 10;
     carUpgradeLevel += 1;
     car.speed += 1;
+    bulletSpeed += 2;
   }
 });
 function drawBullets() {
@@ -235,7 +237,7 @@ function drawBullets() {
 
   for (let i = bullets.length - 1; i >= 0; i--) {
     let bullet = bullets[i];
-    bullet.y -= 10;
+    bullet.y -= bulletSpeed;
 
     ctx.fillRect(
       bullet.x,
