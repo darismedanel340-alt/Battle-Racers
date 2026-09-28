@@ -149,51 +149,149 @@ type: type
 setInterval(spawnEnemy, 1500);
   setInterval(spawnPowerUp, 8000);
 function drawEnemies() {
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        let enemy = enemies[i];
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    let enemy = enemies[i];
 
-        enemy.y += enemy.speed;
+    enemy.y += enemy.speed;
 
-if (
-    enemy.x < car.x + car.width &&
-    enemy.x + enemy.width > car.x &&
-    enemy.y < car.y + car.height &&
-    enemy.y + enemy.height > car.y
-) {
-    health -= 1;
-  
- if (health <= 0) {
-  health = 0;
-   
-}
-    enemies.splice(i, 1);
-    continue;
-}
+    // Collision with player's car
+    if (
+      enemy.x < car.x + car.width &&
+      enemy.x + enemy.width > car.x &&
+      enemy.y < car.y + car.height &&
+      enemy.y + enemy.height > car.y
+    ) {
+      // Monster cars cause 2 damage
+      health -= enemy.strong ? 2 : 1;
 
-        ctx.fillStyle = enemy.strong ? "red" : "blue";
-        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-      ctx.fillStyle = "black";
-ctx.fillRect(enemy.x - 5, enemy.y + 15, 5, 20);
-ctx.fillRect(enemy.x + enemy.width, enemy.y + 15, 5, 20);
-ctx.fillRect(enemy.x - 5, enemy.y + 55, 5, 20);
-ctx.fillRect(enemy.x + enemy.width, enemy.y + 55, 5, 20);
-ctx.fillStyle = "black";
-ctx.fillRect(enemy.x + 10, enemy.y + 25, 30, 25);
-      ctx.fillStyle = "white";
-ctx.fillRect(enemy.x + 5, enemy.y + 3, 10, 6);
-ctx.fillRect(enemy.x + enemy.width - 15, enemy.y + 3, 10, 6);
-      if (enemy.strong) {
-  ctx.fillStyle = "black";
-  ctx.fillRect(enemy.x, enemy.y - 10, 50, 6);
+      if (health <= 0) {
+        health = 0;
+      }
 
-  ctx.fillStyle = "lime";
-  ctx.fillRect(enemy.x, enemy.y - 10, (enemy.health / 3) * 50, 6);
-}
-        if (enemy.y > canvas.height) {
-            enemies.splice(i, 1);
-        }
+      enemies.splice(i, 1);
+      continue;
     }
+
+    // =========================
+    // 👹 MONSTER CAR
+    // =========================
+    if (enemy.strong) {
+
+      // Monster body
+      ctx.fillStyle = "#8B0000";
+      ctx.fillRect(
+        enemy.x - 5,
+        enemy.y,
+        enemy.width + 10,
+        enemy.height
+      );
+
+      // Armor plates
+      ctx.fillStyle = "#333";
+      ctx.fillRect(enemy.x + 5, enemy.y + 20, 40, 12);
+      ctx.fillRect(enemy.x + 5, enemy.y + 55, 40, 12);
+
+      // Large monster wheels
+      ctx.fillStyle = "black";
+
+      ctx.fillRect(enemy.x - 10, enemy.y + 10, 10, 25);
+      ctx.fillRect(enemy.x + enemy.width, enemy.y + 10, 10, 25);
+
+      ctx.fillRect(enemy.x - 10, enemy.y + 55, 10, 25);
+      ctx.fillRect(enemy.x + enemy.width, enemy.y + 55, 10, 25);
+
+      // Monster windshield
+      ctx.fillStyle = "#111";
+      ctx.fillRect(enemy.x + 8, enemy.y + 35, 34, 20);
+
+      // Evil headlights
+      ctx.fillStyle = "yellow";
+      ctx.fillRect(enemy.x + 5, enemy.y + 3, 12, 7);
+      ctx.fillRect(enemy.x + 33, enemy.y + 3, 12, 7);
+
+      // Spikes
+      ctx.fillStyle = "silver";
+
+      ctx.beginPath();
+      ctx.moveTo(enemy.x, enemy.y + 15);
+      ctx.lineTo(enemy.x - 12, enemy.y + 25);
+      ctx.lineTo(enemy.x, enemy.y + 30);
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.moveTo(enemy.x + enemy.width, enemy.y + 15);
+      ctx.lineTo(enemy.x + enemy.width + 12, enemy.y + 25);
+      ctx.lineTo(enemy.x + enemy.width, enemy.y + 30);
+      ctx.fill();
+
+      // MONSTER label
+      ctx.fillStyle = "white";
+      ctx.font = "bold 10px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(
+        "MONSTER",
+        enemy.x + enemy.width / 2,
+        enemy.y + 82
+      );
+
+      // Health bar background
+      ctx.fillStyle = "black";
+      ctx.fillRect(enemy.x, enemy.y - 12, 50, 7);
+
+      // Health bar
+      ctx.fillStyle = "lime";
+      ctx.fillRect(
+        enemy.x,
+        enemy.y - 12,
+        Math.max(0, enemy.health / 3) * 50,
+        7
+      );
+
+    } else {
+
+      // =========================
+      // 🚙 NORMAL ENEMY CAR
+      // =========================
+
+      ctx.fillStyle = "blue";
+      ctx.fillRect(
+        enemy.x,
+        enemy.y,
+        enemy.width,
+        enemy.height
+      );
+
+      // Wheels
+      ctx.fillStyle = "black";
+
+      ctx.fillRect(enemy.x - 5, enemy.y + 15, 5, 20);
+      ctx.fillRect(enemy.x + enemy.width, enemy.y + 15, 5, 20);
+
+      ctx.fillRect(enemy.x - 5, enemy.y + 55, 5, 20);
+      ctx.fillRect(enemy.x + enemy.width, enemy.y + 55, 5, 20);
+
+      // Window
+      ctx.fillStyle = "black";
+      ctx.fillRect(enemy.x + 10, enemy.y + 25, 30, 25);
+
+      // Headlights
+      ctx.fillStyle = "white";
+      ctx.fillRect(enemy.x + 5, enemy.y + 3, 10, 6);
+      ctx.fillRect(
+        enemy.x + enemy.width - 15,
+        enemy.y + 3,
+        10,
+        6
+      );
+    }
+
+    // Remove enemies after they leave screen
+    if (enemy.y > canvas.height) {
+      enemies.splice(i, 1);
+    }
+  }
 }
+  
 function drawRoad() {
   ctx.fillStyle = "#555";
   ctx.fillRect(0, 0, canvas.width, canvas.height);
