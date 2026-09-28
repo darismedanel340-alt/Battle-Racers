@@ -102,19 +102,24 @@ let score = 0;
   let gameStarted = false;
   let rapidFire = false;
 let rapidFireTimer = 0;
-  let coins = 0;
-  let carUpgradeLevel = 1;
-  let carColor = "red";
-  let unlockedCars = JSON.parse(localStorage.getItem("unlockedCars")) || ["red"];
+  let coins = Number(localStorage.getItem("coins")) || 0;
+let carUpgradeLevel = Number(localStorage.getItem("carUpgradeLevel")) || 1;
+let carColor = localStorage.getItem("selectedCar") || "red";
+let unlockedCars = JSON.parse(localStorage.getItem("unlockedCars")) || ["red"];
+
 const carColors = ["red", "blue", "green", "orange", "purple", "gold"];
-  let bulletSpeed = 10;
-  let bulletDamage = 1;
+
+let bulletSpeed = 10 + ((carUpgradeLevel - 1) * 2);
+let bulletDamage = 1 + (carUpgradeLevel - 1);
+car.speed = 8 + (carUpgradeLevel - 1);
   
   const enemies = [];
   
 const explosions = [];
   const powerUps = [];
 function spawnEnemy() {
+  if (!gameStarted || health <= 0) return;
+  
  const isStrong = Math.random() < 0.3;   
   enemies.push({
         x: Math.random() * (canvas.width - 50),
@@ -128,6 +133,7 @@ strong: isStrong,
     });
 }
 function spawnPowerUp() {
+  if (!gameStarted || health <= 0) return;
 
   const type = Math.random() < 0.5 ? "rapid" : "health";
   powerUps.push({
@@ -249,6 +255,9 @@ document.getElementById("fireButton").addEventListener("click", shoot);
     if (carUpgradeLevel < 10 && coins >= upgradeCost) {
     coins -= upgradeCost;
     carUpgradeLevel += 1;
+
+      localStorage.setItem("coins", coins);
+localStorage.setItem("carUpgradeLevel", carUpgradeLevel);
       let nextCost = Math.floor(100 * Math.pow(1.8, carUpgradeLevel - 1));
 if (carUpgradeLevel >= 10) {
   document.getElementById("upgradeButton").textContent = "🏆 MAX UPGRADE";
@@ -261,48 +270,73 @@ if (carUpgradeLevel >= 10) {
   }
 });
   document.getElementById("garageButton").addEventListener("click", function() {
-  let choice = prompt(
-    "🚗 BATTLE RACERS GARAGE 🚗\n\n" +
-    "1 - 🔴 Red Racer - FREE\n" +
-    "2 - 🔵 Blue Speedster - 100 COINS\n" +
-    "3 - 🟢 Green Monster - 250 COINS\n" +
-    "4 - 🟠 Orange Blazer - 500 COINS\n" +
-    "5 - 🟣 Purple Phantom - 1000 COINS\n" +
-    "6 - 🟡 Gold Champion - 2500 COINS\n\n" +
-    "Enter 1, 2, 3, 4, 5, or 6:"
-  );
 
   const cars = {
-    "1": { color: "red", cost: 0 },
-    "2": { color: "blue", cost: 100 },
-    "3": { color: "green", cost: 250 },
-    "4": { color: "orange", cost: 500 },
-    "5": { color: "purple", cost: 1000 },
-    "6": { color: "gold", cost: 2500 }
+    "1": { name: "Red Racer", color: "red", cost: 0 },
+    "2": { name: "Blue Speedster", color: "blue", cost: 100 },
+    "3": { name: "Green Monster", color: "green", cost: 250 },
+    "4": { name: "Orange Blazer", color: "orange", cost: 500 },
+    "5": { name: "Purple Phantom", color: "purple", cost: 1000 },
+    "6": { name: "Gold Champion", color: "gold", cost: 2500 }
   };
 
-  const selectedCar = cars[choice];
+  let garageText = "🚗 BATTLE RACERS GARAGE 🚗\n";
+  garageText += "COINS: " + coins + "\n\n";
 
-  if (!selectedCar) return;
+  for (let number in cars) {
+    let c = cars[number];
+    let owned = unlockedCars.includes(c.color);
 
+    garageText += number + " - " + c.name;
+
+    if (c.color === carColor) {
+      garageText += " ✅ SELECTED";
+    } else if (owned) {
+      garageText += " 🔓 OWNED";
+    } else {
+      garageText += " 🔒 " + c.cost + " COINS";
+    }
+
+    garageText += "\n";
+  }
+
+  garageText += "\nEnter 1, 2, 3, 4, 5, or 6:";
+
+  let choice = prompt(garageText);
+
+  if (!cars[choice]) return;
+
+  let selectedCar = cars[choice];
+
+  // Already owned — select for free
   if (unlockedCars.includes(selectedCar.color)) {
     carColor = selectedCar.color;
+    localStorage.setItem("selectedCar", carColor);
+    alert("🏁 " + selectedCar.name + " selected!");
     return;
   }
 
+  // Buy locked car
   if (coins >= selectedCar.cost) {
     coins -= selectedCar.cost;
     carColor = selectedCar.color;
-
+localStorage.setItem("coins", coins);
     unlockedCars.push(selectedCar.color);
+
     localStorage.setItem(
       "unlockedCars",
       JSON.stringify(unlockedCars)
     );
 
-    alert("🚗 New car unlocked!");
+    localStorage.setItem("selectedCar", carColor);
+
+    alert("🎉 " + selectedCar.name + " unlocked!");
   } else {
-    alert("You need " + selectedCar.cost + " coins!");
+    alert(
+      "🔒 You need " +
+      (selectedCar.cost - coins) +
+      " more coins!"
+    );
   }
 });
   
@@ -343,6 +377,7 @@ if (enemy.health <= 0) {
   enemies.splice(j, 1);
   score += enemy.strong ? 30 : 10;
   coins += enemy.strong ? 3 : 1;
+  localStorage.setItem("coins", coins);
   level = Math.floor(score / 100) + 1;
 }
         bullets.splice(i, 1);
@@ -409,7 +444,18 @@ document.addEventListener("touchmove", function(e) {
   car.x = touch.clientX - car.width / 2;
   e.preventDefault();
 }, { passive: false });
+document.addEventListener("keydown", function(e) {
+  if (e.key === "ArrowLeft" || e.key.toLowerCase() === "a") {
+    car.x -= car.speed;
+  }
 
+  if (e.key === "ArrowRight" || e.key.toLowerCase() === "d") {
+    car.x += car.speed;
+  }
+
+  car.x = Math.max(0, Math.min(canvas.width - car.width, car.x));
+});
+  
 function gameLoop() {
   if (!gameStarted) {
   drawRoad();
@@ -484,10 +530,21 @@ document.addEventListener("keydown", function(event) {
     bullets.length = 0;
     explosions.length = 0;
       powerUps.length = 0;
+      rapidFire = false;
+rapidFireTimer = 0;
+      
     gameLoop();
   }
 });
-  document.getElementById("upgradeButton").textContent = "⬆ UPGRADE 100 COINS";
+  let startingUpgradeCost = Math.floor(100 * Math.pow(1.8, carUpgradeLevel - 1));
+
+if (carUpgradeLevel >= 10) {
+  document.getElementById("upgradeButton").textContent = "🏆 MAX UPGRADE";
+} else {
+  document.getElementById("upgradeButton").textContent =
+    "⬆ UPGRADE " + startingUpgradeCost + " COINS";
+}
+  
 gameLoop();
 </script>
 
