@@ -104,6 +104,8 @@ let score = 0;
 let rapidFireTimer = 0;
   let coins = 0;
   let carUpgradeLevel = 1;
+  let carColor = "red";
+const carColors = ["red", "blue", "green", "orange", "purple", "gold"];
   let bulletSpeed = 10;
   let bulletDamage = 1;
   
@@ -202,7 +204,7 @@ function drawRoad() {
 }
 
 function drawCar() {
-  ctx.fillStyle = "red";
+  ctx.fillStyle = carColor;
   ctx.fillRect(car.x, car.y, car.width, car.height);
   ctx.fillStyle = "black";
 ctx.fillRect(car.x - 5, car.y + 15, 5, 20);
@@ -258,8 +260,33 @@ if (carUpgradeLevel >= 10) {
   }
 });
   document.getElementById("garageButton").addEventListener("click", function() {
-  alert("🚗 GARAGE OPENING!");
+  let choice = prompt(
+    "🚗 BATTLE RACERS GARAGE 🚗\n\n" +
+    "1 - 🔴 Red Racer\n" +
+"2 - 🔵 Blue Speedster\n" +
+"3 - 🟢 Green Monster\n" +
+"4 - 🟠 Orange Blazer\n" +
+"5 - 🟣 Purple Phantom\n" +
+"6 - 🟡 Gold Champion\n\n" +
+"Enter 1, 2, 3, 4, 5, or 6:"
+  );
+
+  if (choice === "1") {
+    carColor = "red";
+  } else if (choice === "2") {
+    carColor = "blue";
+  } else if (choice === "3") {
+    carColor = "green";
+} else if (choice === "4") {
+  carColor = "orange";
+} else if (choice === "5") {
+  carColor = "purple";
+} else if (choice === "6") {
+  carColor = "gold";
+  }
+  }
 });
+  
 function drawBullets() {
   ctx.fillStyle = "yellow";
 
