@@ -90,6 +90,7 @@ let rapidFireTimer = 0;
   let coins = 0;
   let carUpgradeLevel = 1;
   let bulletSpeed = 10;
+  let bulletDamage = 1;
   
   const enemies = [];
   
@@ -230,6 +231,7 @@ document.getElementById("fireButton").addEventListener("click", shoot);
     carUpgradeLevel += 1;
     car.speed += 1;
     bulletSpeed += 2;
+    bulletDamage += 1;
   }
 });
 function drawBullets() {
@@ -263,7 +265,7 @@ function drawBullets() {
     size: 10,
     life: 20
 });
-       enemy.health -= 1;
+       enemy.health -= bulletDamage;
 
 if (enemy.health <= 0) {
   enemies.splice(j, 1);
