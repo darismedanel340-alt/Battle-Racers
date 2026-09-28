@@ -231,6 +231,8 @@ document.getElementById("fireButton").addEventListener("click", shoot);
     if (carUpgradeLevel < 10 && coins >= upgradeCost) {
     coins -= upgradeCost;
     carUpgradeLevel += 1;
+      let nextCost = Math.floor(100 * Math.pow(1.8, carUpgradeLevel - 1));
+document.getElementById("upgradeButton").textContent = "⬆ UPGRADE " + nextCost + " COINS";
     car.speed += 1;
     bulletSpeed += 2;
     bulletDamage += 1;
