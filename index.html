@@ -226,8 +226,9 @@ function shoot() {
 }
 document.getElementById("fireButton").addEventListener("click", shoot);
   document.getElementById("upgradeButton").addEventListener("click", function() {
-  if (carUpgradeLevel < 5 && coins >= 10) {
-    coins -= 10;
+ let upgradeCost = Math.floor(100 * Math.pow(1.8, carUpgradeLevel - 1));
+    if (carUpgradeLevel < 10 && coins >= upgradeCost) {
+    coins -= upgradeCost;
     carUpgradeLevel += 1;
     car.speed += 1;
     bulletSpeed += 2;
