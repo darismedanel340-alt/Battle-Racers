@@ -42,6 +42,20 @@ canvas {
     font-size: 18px;
     font-weight: bold;
 }
+  #upgradeButton {
+  position: fixed;
+  bottom: 125px;
+  right: 25px;
+  z-index: 100;
+  background: gold;
+  color: black;
+  border: 3px solid white;
+  border-radius: 15px;
+  width: 120px;
+  height: 55px;
+  font-size: 16px;
+  font-weight: bold;
+  }
 </style>
 </head>
 
@@ -50,6 +64,7 @@ canvas {
 <div id="title">🏁 BATTLE RACERS 🏁</div>
 <canvas id="game"></canvas>
 <button id="fireButton">🔥 FIRE</button>
+  <button id="upgradeButton">⬆️ UPGRADE</button>
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -73,6 +88,7 @@ let score = 0;
   let rapidFire = false;
 let rapidFireTimer = 0;
   let coins = 0;
+  let carUpgradeLevel = 1;
   
   const enemies = [];
   
@@ -207,6 +223,13 @@ function shoot() {
   }
 }
 document.getElementById("fireButton").addEventListener("click", shoot);
+  document.getElementById("upgradeButton").addEventListener("click", function() {
+  if (carUpgradeLevel < 5 && coins >= 10) {
+    coins -= 10;
+    carUpgradeLevel += 1;
+    car.speed += 1;
+  }
+});
 function drawBullets() {
   ctx.fillStyle = "yellow";
 
@@ -345,6 +368,7 @@ ctx.fillText("SCORE: " + score, 20, 50);
   ctx.fillText("HEALTH: " + health, 20, 80);
   ctx.fillText("LEVEL: " + level, 20, 110);
   ctx.fillText("COINS: " + coins, 20, 140);
+  ctx.fillText("CAR: LV " + carUpgradeLevel, 20, 170);
 
   if (health <= 0) {
   ctx.fillStyle = "white";
