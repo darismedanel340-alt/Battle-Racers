@@ -72,6 +72,7 @@ let score = 0;
   let gameStarted = false;
   let rapidFire = false;
 let rapidFireTimer = 0;
+  let coins = 0;
   
   const enemies = [];
   
@@ -242,6 +243,7 @@ function drawBullets() {
 if (enemy.health <= 0) {
   enemies.splice(j, 1);
   score += enemy.strong ? 30 : 10;
+  coins += enemy.strong ? 3 : 1;
   level = Math.floor(score / 100) + 1;
 }
         bullets.splice(i, 1);
@@ -342,8 +344,9 @@ ctx.font = "bold 24px Arial";
 ctx.fillText("SCORE: " + score, 20, 50);
   ctx.fillText("HEALTH: " + health, 20, 80);
   ctx.fillText("LEVEL: " + level, 20, 110);
+  ctx.fillText("COINS: " + coins, 20, 140);
 
-if (health <= 0) {
+  if (health <= 0) {
   ctx.fillStyle = "white";
   ctx.font = "bold 48px Arial";
   ctx.textAlign = "center";
