@@ -262,27 +262,52 @@ if (carUpgradeLevel >= 10) {
   document.getElementById("garageButton").addEventListener("click", function() {
   let choice = prompt(
     "🚗 BATTLE RACERS GARAGE 🚗\n\n" +
-    "1 - 🔴 Red Racer\n" +
-"2 - 🔵 Blue Speedster\n" +
-"3 - 🟢 Green Monster\n" +
-"4 - 🟠 Orange Blazer\n" +
-"5 - 🟣 Purple Phantom\n" +
-"6 - 🟡 Gold Champion\n\n" +
+    "1 - 🔴 Red Racer - FREE\n" +
+"2 - 🔵 Blue Speedster - 100 COINS\n" +
+"3 - 🟢 Green Monster - 250 COINS\n" +
+"4 - 🟠 Orange Blazer - 500 COINS\n" +
+"5 - 🟣 Purple Phantom - 1000 COINS\n" +
+"6 - 🟡 Gold Champion - 2000 COINS\n\n" +
 "Enter 1, 2, 3, 4, 5, or 6:"
   );
 
   if (choice === "1") {
     carColor = "red";
   } else if (choice === "2") {
-    carColor = "blue";
+    if (coins >= 100) {
+  coins -= 100;
+  carColor = "blue";
+} else {
+  alert("You need 100 coins!");
+}
   } else if (choice === "3") {
-    carColor = "green";
+    if (coins >= 250) {
+  coins -= 250;
+  carColor = "green";
+} else {
+  alert("You need 250 coins!");
+}
 } else if (choice === "4") {
+  if (coins >= 500) {
+  coins -= 500;
   carColor = "orange";
-} else if (choice === "5") {
+} else {
+  alert("You need 500 coins!");
+}
+    } else if (choice === "5") {
+if (coins >= 1000) {
+  coins -= 1000;
   carColor = "purple";
+} else {
+  alert("You need 1000 coins!");
+}
 } else if (choice === "6") {
+  if (coins >= 2500) {
+  coins -= 2500;
   carColor = "gold";
+} else {
+  alert("You need 2500 coins!");
+}
   }
 });
   
