@@ -105,6 +105,7 @@ let rapidFireTimer = 0;
   let coins = 0;
   let carUpgradeLevel = 1;
   let carColor = "red";
+  let unlockedCars = JSON.parse(localStorage.getItem("unlockedCars")) || ["red"];
 const carColors = ["red", "blue", "green", "orange", "purple", "gold"];
   let bulletSpeed = 10;
   let bulletDamage = 1;
@@ -263,51 +264,45 @@ if (carUpgradeLevel >= 10) {
   let choice = prompt(
     "🚗 BATTLE RACERS GARAGE 🚗\n\n" +
     "1 - 🔴 Red Racer - FREE\n" +
-"2 - 🔵 Blue Speedster - 100 COINS\n" +
-"3 - 🟢 Green Monster - 250 COINS\n" +
-"4 - 🟠 Orange Blazer - 500 COINS\n" +
-"5 - 🟣 Purple Phantom - 1000 COINS\n" +
-"6 - 🟡 Gold Champion - 2000 COINS\n\n" +
-"Enter 1, 2, 3, 4, 5, or 6:"
+    "2 - 🔵 Blue Speedster - 100 COINS\n" +
+    "3 - 🟢 Green Monster - 250 COINS\n" +
+    "4 - 🟠 Orange Blazer - 500 COINS\n" +
+    "5 - 🟣 Purple Phantom - 1000 COINS\n" +
+    "6 - 🟡 Gold Champion - 2500 COINS\n\n" +
+    "Enter 1, 2, 3, 4, 5, or 6:"
   );
 
-  if (choice === "1") {
-    carColor = "red";
-  } else if (choice === "2") {
-    if (coins >= 100) {
-  coins -= 100;
-  carColor = "blue";
-} else {
-  alert("You need 100 coins!");
-}
-  } else if (choice === "3") {
-    if (coins >= 250) {
-  coins -= 250;
-  carColor = "green";
-} else {
-  alert("You need 250 coins!");
-}
-} else if (choice === "4") {
-  if (coins >= 500) {
-  coins -= 500;
-  carColor = "orange";
-} else {
-  alert("You need 500 coins!");
-}
-    } else if (choice === "5") {
-if (coins >= 1000) {
-  coins -= 1000;
-  carColor = "purple";
-} else {
-  alert("You need 1000 coins!");
-}
-} else if (choice === "6") {
-  if (coins >= 2500) {
-  coins -= 2500;
-  carColor = "gold";
-} else {
-  alert("You need 2500 coins!");
-}
+  const cars = {
+    "1": { color: "red", cost: 0 },
+    "2": { color: "blue", cost: 100 },
+    "3": { color: "green", cost: 250 },
+    "4": { color: "orange", cost: 500 },
+    "5": { color: "purple", cost: 1000 },
+    "6": { color: "gold", cost: 2500 }
+  };
+
+  const selectedCar = cars[choice];
+
+  if (!selectedCar) return;
+
+  if (unlockedCars.includes(selectedCar.color)) {
+    carColor = selectedCar.color;
+    return;
+  }
+
+  if (coins >= selectedCar.cost) {
+    coins -= selectedCar.cost;
+    carColor = selectedCar.color;
+
+    unlockedCars.push(selectedCar.color);
+    localStorage.setItem(
+      "unlockedCars",
+      JSON.stringify(unlockedCars)
+    );
+
+    alert("🚗 New car unlocked!");
+  } else {
+    alert("You need " + selectedCar.cost + " coins!");
   }
 });
   
