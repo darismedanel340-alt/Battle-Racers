@@ -70,6 +70,20 @@ canvas {
   font-size: 16px;
   font-weight: bold;
   }
+  #weaponButton {
+  position: fixed;
+  bottom: 255px;
+  right: 25px;
+  z-index: 100;
+  background: purple;
+  color: white;
+  border: 3px solid white;
+  border-radius: 15px;
+  width: 120px;
+  height: 55px;
+  font-size: 15px;
+  font-weight: bold;
+  }
 </style>
 </head>
 
@@ -80,6 +94,7 @@ canvas {
 <button id="fireButton">🔥 FIRE</button>
   <button id="upgradeButton">⬆️ UPGRADE</button>
   <button id="garageButton">🚗 GARAGE</button>
+  <button id="weaponButton">🔫 WEAPON</button>
 <script>
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
@@ -104,13 +119,15 @@ let score = 0;
 let rapidFireTimer = 0;
   let coins = Number(localStorage.getItem("coins")) || 0;
 let carUpgradeLevel = Number(localStorage.getItem("carUpgradeLevel")) || 1;
+  let weaponLevel = Number(localStorage.getItem("weaponLevel")) || 1;
 let carColor = localStorage.getItem("selectedCar") || "red";
 let unlockedCars = JSON.parse(localStorage.getItem("unlockedCars")) || ["red"];
 
 const carColors = ["red", "blue", "green", "orange", "purple", "gold"];
 
-let bulletSpeed = 10 + ((carUpgradeLevel - 1) * 2);
-let bulletDamage = 1 + (carUpgradeLevel - 1);
+let bulletSpeed = 10 + ((weaponLevel - 1) * 2);
+let bulletDamage = 1 + (weaponLevel - 1);
+  
 car.speed = 8 + (carUpgradeLevel - 1);
   
   const enemies = [];
@@ -363,8 +380,6 @@ if (carUpgradeLevel >= 10) {
   document.getElementById("upgradeButton").textContent = "⬆ UPGRADE " + nextCost + " COINS";
 }
     car.speed += 1;
-    bulletSpeed += 2;
-    bulletDamage += 1;
   }
 });
   document.getElementById("garageButton").addEventListener("click", function() {
@@ -437,7 +452,54 @@ localStorage.setItem("coins", coins);
     );
   }
 });
-  
+  document.getElementById("weaponButton").addEventListener("click", function() {
+
+  if (weaponLevel >= 10) {
+    alert("🏆 Your weapon is already MAX LEVEL!");
+    return;
+  }
+
+  let weaponCost = Math.floor(75 * Math.pow(1.7, weaponLevel - 1));
+
+  if (coins >= weaponCost) {
+    coins -= weaponCost;
+    weaponLevel++;
+
+    bulletDamage = 1 + (weaponLevel - 1);
+    bulletSpeed = 10 + ((weaponLevel - 1) * 2);
+
+    localStorage.setItem("coins", coins);
+    localStorage.setItem("weaponLevel", weaponLevel);
+
+    updateWeaponButton();
+
+    alert(
+      "🔫 WEAPON UPGRADED!\n\n" +
+      "Weapon Level: " + weaponLevel + "\n" +
+      "Damage: " + bulletDamage + "\n" +
+      "Bullet Speed: " + bulletSpeed
+    );
+
+  } else {
+    alert(
+      "🔒 Not enough coins!\n\n" +
+      "You need " + (weaponCost - coins) + " more coins."
+    );
+  }
+});
+
+function updateWeaponButton() {
+  if (weaponLevel >= 10) {
+    document.getElementById("weaponButton").textContent =
+      "🏆 WEAPON MAX";
+  } else {
+    let weaponCost =
+      Math.floor(75 * Math.pow(1.7, weaponLevel - 1));
+
+    document.getElementById("weaponButton").textContent =
+      "🔫 WEAPON " + weaponCost;
+  }
+}
 function drawBullets() {
   ctx.fillStyle = "yellow";
 
@@ -590,6 +652,7 @@ ctx.fillText("SCORE: " + score, 20, 50);
   ctx.fillText("LEVEL: " + level, 20, 110);
   ctx.fillText("COINS: " + coins, 20, 140);
   ctx.fillText("CAR: LV " + carUpgradeLevel, 20, 170);
+  ctx.fillText("WEAPON: LV " + weaponLevel, 20, 200);
 
   if (health <= 0) {
   ctx.fillStyle = "white";
@@ -642,7 +705,7 @@ if (carUpgradeLevel >= 10) {
   document.getElementById("upgradeButton").textContent =
     "⬆ UPGRADE " + startingUpgradeCost + " COINS";
 }
-  
+  updateWeaponButton();
 gameLoop();
 </script>
 
