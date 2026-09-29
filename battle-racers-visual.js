@@ -97,6 +97,10 @@
   const oldCar=drawCar;
   drawCar=function(){
     if(!ready(racer)){oldCar();return}
+    // Keep the racer above the bottom shop bar on portrait phones.
+    // Move the collision box with the image so hits remain aligned.
+    if(canvas.width<canvas.height&&canvas.height>600)
+      car.y=canvas.height-205;
     const w=Math.min(canvas.width*.37,165),h=w*1.05;
     const x=car.x+car.width/2-w/2,y=car.y+car.height*.7-h*.7;
     ctx.save();
