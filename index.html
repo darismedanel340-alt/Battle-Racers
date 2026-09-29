@@ -7363,7 +7363,23 @@ bestScoreMenu.textContent =
 /* ==========================================
    BATTLE RACERS CODE COMPLETE
 ========================================== */
+let musicStep = 0;
 
+setInterval(() => {
+  if (!gameStarted || paused || countdownActive ||
+      health <= 0 || !soundEnabled) return;
+
+  const notes = [220, 262, 330, 262, 196, 247, 294, 247];
+
+  playTone(notes[musicStep % notes.length], .20, "triangle", .012);
+
+  if (musicStep % 4 === 0) {
+    playTone(110, .30, "sine", .018);
+  }
+
+  musicStep++;
+}, 260);
+  
 </script>
 
 </body>
