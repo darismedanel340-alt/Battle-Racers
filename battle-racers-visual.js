@@ -119,11 +119,35 @@
 
   // Preserve all existing movement, collision, and damage behavior.
   const oldEnemies=drawEnemies;
+  // The painted road bends left near the horizon and widens toward the player.
+  // Keep game objects in lanes that follow that shape.
+  const roadSections=[
+    [0,.58,.035],[.18,.55,.075],[.28,.44,.12],
+    [.42,.47,.20],[.65,.50,.34],[1,.50,.46]
+  ];
+  function roadPosition(y,lane){
+    const depth=Math.max(0,Math.min(1,y/canvas.height));
+    let a=roadSections[0],b=roadSections[roadSections.length-1];
+    for(let i=1;i<roadSections.length;i++){
+      if(depth<=roadSections[i][0]){a=roadSections[i-1];b=roadSections[i];break}
+    }
+    const mix=(depth-a[0])/(b[0]-a[0]);
+    return canvas.width*(a[1]+(b[1]-a[1])*mix+
+      lane*(a[2]+(b[2]-a[2])*mix));
+  }
+  function stayOnRoad(object){
+    if(object.roadLane===undefined)
+      object.roadLane=[-.56,0,.56][Math.floor(Math.random()*3)];
+    object.x=roadPosition(object.y+object.height/2,object.roadLane)-object.width/2;
+  }
   drawEnemies=function(){
     if(!ready(racer)){oldEnemies();return}
+    enemies.forEach(stayOnRoad);
     ctx.save();ctx.globalAlpha=0;oldEnemies();ctx.restore();
     enemies.forEach((e,i)=>{
-      const w=e.strong?70:58,h=e.strong?83:72;
+      const depth=Math.max(0,Math.min(1,e.y/canvas.height));
+      const scale=.43+.75*depth;
+      const w=(e.strong?70:58)*scale,h=(e.strong?83:72)*scale;
       sprite(ctx,e.x+e.width/2-w/2,e.y,w,h,
         e.strong?"orange":["blue","green","purple"][i%3]);
       if(e.strong){
@@ -132,6 +156,11 @@
         ctx.fillRect(e.x,e.y-9,e.width*Math.max(0,e.health/3),5);
       }
     });
+  };
+  const oldPowerUps=drawPowerUps;
+  drawPowerUps=function(){
+    powerUps.forEach(stayOnRoad);
+    oldPowerUps();
   };
   const oldBoss=drawBoss;
   drawBoss=function(){
