@@ -6831,7 +6831,8 @@ function openShop(type){
   stopFiring();
 
   steeringDirection = 0;
-
+paused = true;
+  
   shopPage.style.display =
     "block";
 
@@ -6872,12 +6873,9 @@ function openShop(type){
 ========================================== */
 
 function closeShop(){
-
-  shopPage.style.display =
-    "none";
-
+  shopPage.style.display = "none";
   shopGrid.innerHTML = "";
-
+  paused = false;
 }
 
 
