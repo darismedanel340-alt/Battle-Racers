@@ -863,8 +863,6 @@ function resizeGame(){
 
 }
 
-resizeGame();
-
 window.addEventListener(
   "resize",
   resizeGame
@@ -886,19 +884,7 @@ window.addEventListener(
    PLAYER DATA
 ========================================== */
 
-const car={
 
-  x:canvas.width/2-25,
-
-  y:canvas.height-150,
-
-  width:50,
-
-  height:90,
-
-  speed:8
-
-};
 
 const bullets=[];
 const enemies=[];
@@ -908,7 +894,16 @@ const enemyBullets=[];
 const bossMines=[];
 
 /* NEW VISUAL EFFECT ARRAYS */
+  
+const car={
+  x:canvas.width/2-25,
+  y:canvas.height-150,
+  width:50,
+  height:90,
+  speed:8
+};
 
+resizeGame();
 let muzzleFlashes=[];
 let impactSparks=[];
 let blastEffects=[];
