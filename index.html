@@ -919,7 +919,7 @@ let level=1;
 
 let gameStarted=false;
 let paused=false;
-
+let shopWasPaused=false;
 let countdownActive=false;
 
 let rapidFire=false;
@@ -6831,6 +6831,7 @@ function openShop(type){
   stopFiring();
 
   steeringDirection = 0;
+  shopWasPaused = paused;
 paused = true;
   
   shopPage.style.display =
@@ -6875,7 +6876,7 @@ paused = true;
 function closeShop(){
   shopPage.style.display = "none";
   shopGrid.innerHTML = "";
-  paused = false;
+paused = shopWasPaused;
 }
 
 
