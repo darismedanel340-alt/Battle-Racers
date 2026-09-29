@@ -5349,7 +5349,11 @@ function drawBullets(){
         playExplosionSound(
           true
         );
-
+const victoryMessage = document.createElement("div");
+victoryMessage.textContent = "🏆 BOSS DEFEATED! 🏆";
+victoryMessage.style.cssText = "position:fixed;left:50%;top:32%;transform:translate(-50%,-50%);z-index:320;color:#ffe64a;font:bold clamp(18px,6vw,30px) Arial;text-shadow:0 0 12px #ff7800,3px 3px #000;white-space:nowrap;pointer-events:none;";
+document.body.appendChild(victoryMessage);
+setTimeout(() => victoryMessage.remove(), 1800);
         boss=null;
 
         bossMines.length=0;
