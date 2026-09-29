@@ -7386,6 +7386,114 @@ setInterval(() => {
   
 </script>
 
+  /* Battle Racers visual upgrade. Load after the game's existing inline script. */
+(() => {
+  "use strict";
+
+  const style = document.createElement("style");
+  style.textContent = `
+    #shopPage { background: radial-gradient(circle at 50% -15%, #18405a, #07131e 65%); }
+    .shopCard { background: linear-gradient(155deg, #203b50, #101d2a 65%);
+      border-color: #4b9ec4; box-shadow: 0 8px 22px #0008, inset 0 1px #ffffff24; }
+    .shopCard:has(.shopAction:disabled) { border-color: #59ed8b; box-shadow: 0 0 20px #29dc7050; }
+    .shopPreview { display: flex; align-items: center; justify-content: center;
+      min-height: 116px; border-radius: 12px;
+      background: radial-gradient(ellipse, #4c789764, #07131e 70%); }
+    .shopPreview canvas { width: 92px; height: 116px; max-width: 100%; }
+    #menuPanel { background: linear-gradient(150deg, #102d40ee, #06121fef);
+      box-shadow: 0 0 45px #43bfff55, inset 0 1px #ffffff38; }
+    #shopBar { backdrop-filter: blur(8px); }
+    #visualDamage { position: fixed; inset: 0; z-index: 115; pointer-events: none;
+      opacity: 0; background: radial-gradient(circle, transparent 36%, #ff1d13a8 100%); }
+    #visualDamage.hit { animation: visualHit .42s ease-out both; }
+    @keyframes visualHit { 0% { opacity: .95; } 100% { opacity: 0; } }
+    #visualBossBanner { position: fixed; left: 50%; top: 19%; transform: translateX(-50%);
+      z-index: 320; pointer-events: none; white-space: nowrap; color: #fff2b3;
+      font: 900 clamp(19px, 6vw, 36px) Arial, sans-serif; letter-spacing: 2px;
+      text-shadow: 0 0 10px #ff3900, 0 0 25px #ff1a00, 3px 3px #250600;
+      animation: visualBoss 2.1s ease-out both; }
+    @keyframes visualBoss { 0% { opacity: 0; transform: translate(-50%, -32px) scale(1.3); }
+      17%, 70% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+      100% { opacity: 0; transform: translate(-50%, -8px) scale(.95); } }
+    @media (orientation: landscape) and (max-height: 600px) {
+      .shopPreview { min-height: 85px; } .shopPreview canvas { width: 65px; height: 82px; }
+    }
+  `;
+  document.head.appendChild(style);
+
+  const damage = document.createElement("div");
+  damage.id = "visualDamage";
+  document.body.appendChild(damage);
+
+  /* Keep canvas.width/height in CSS pixels for the existing collision code.
+     Only the actual backing bitmap gets more pixels. */
+  function sharpenCanvas() {
+    const proto = HTMLCanvasElement.prototype;
+    const widthProperty = Object.getOwnPropertyDescriptor(proto, "width");
+    const heightProperty = Object.getOwnPropertyDescriptor(proto, "height");
+    if (!widthProperty?.set || !heightProperty?.set) return;
+    const logical = { width: canvas.width, height: canvas.height };
+    const ratio = () => Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+    try {
+      Object.defineProperties(canvas, {
+        width: { configurable: true, get: () => logical.width,
+          set(value) { logical.width = Number(value); widthProperty.set.call(canvas, Math.round(logical.width * ratio()));
+            ctx.setTransform(ratio(), 0, 0, ratio(), 0, 0); } },
+        height: { configurable: true, get: () => logical.height,
+          set(value) { logical.height = Number(value); heightProperty.set.call(canvas, Math.round(logical.height * ratio()));
+            ctx.setTransform(ratio(), 0, 0, ratio(), 0, 0); } }
+      });
+      resizeGame();
+    } catch (error) {
+      console.warn("Canvas sharpening unavailable:", error);
+    }
+  }
+  sharpenCanvas();
+
+  const themes = {
+    red:    { light: "#ff8065", body: "#eb3034", dark: "#781019", trim: "#ffffff", shape: "racer" },
+    blue:   { light: "#76e8ff", body: "#1689ed", dark: "#073c95", trim: "#adf4ff", shape: "speed" },
+    green:  { light: "#b8f96c", body: "#36ae44", dark: "#14502e", trim: "#d6ff65", shape: "heavy" },
+    orange: { light: "#ffe379", body: "#ff851c", dark: "#a3330b", trim: "#fff1aa", shape: "wedge" },
+    purple: { light: "#e9a3ff", body: "#903fe1", dark: "#381078", trim: "#ffb9f6", shape: "phantom" },
+    gold:   { light: "#fff4b0", body: "#e8ae19", dark: "#80500c", trim: "#fff5ca", shape: "champion" }
+  };
+
+  function vehicle(g, x, y, w, h, id, preview = false) {
+    const t = themes[id] || themes.red;
+    g.save();
+    g.translate(x, y);
+    g.fillStyle = "#0008";
+    g.beginPath(); g.ellipse(w / 2, h * .69, w * .7, h * .38, 0, 0, Math.PI * 2); g.fill();
+
+    const heavy = t.shape === "heavy" || t.shape === "champion";
+    g.fillStyle = "#090d13";
+    for (const yy of [.18, .64]) for (const xx of [-.12, .94]) {
+      g.beginPath(); g.roundRect(w * xx, h * yy, w * (heavy ? .2 : .16), h * .24, w * .06); g.fill();
+      g.fillStyle = "#465360"; g.fillRect(w * (xx + .035), h * (yy + .06), w * .035, h * .13);
+      g.fillStyle = "#090d13";
+    }
+
+    const body = g.createLinearGradient(0, 0, w, h);
+    body.addColorStop(0, t.light); body.addColorStop(.3, t.body);
+    body.addColorStop(.75, t.body); body.addColorStop(1, t.dark);
+    g.fillStyle = body;
+    g.strokeStyle = t.dark; g.lineWidth = Math.max(1, w * .025);
+    const shoulder = heavy ? .07 : t.shape === "speed" ? .27 : .19;
+    const nose = t.shape === "wedge" ? .30 : t.shape === "phantom" ? .25 : .20;
+    g.beginPath();
+    g.moveTo(w * nose, h * .02); g.lineTo(w * (1 - nose), h * .02);
+    g.lineTo(w * (1 - shoulder), h * .20);
+    g.lineTo(w * (heavy ? 1 : .96), h * .48);
+    g.lineTo(w * .89, h * .94); g.lineTo(w * .11, h * .94);
+    g.lineTo(w * (heavy ? 0 : .04), h * .48); g.lineTo(w * shoulder, h * .20);
+    g.closePath(); g.fill(); g.stroke();
+
+    g.fillStyle = t.trim;
+    if (t.shape === "champion" || t.shape === "racer") {
+      g.fillRect(w * .44, h * .05, w * .12, h * .18);
+      g.fillRect(w * .46, h * .57,
+  
 </body>
 </html>
 
