@@ -7834,7 +7834,49 @@ setInterval(() => {
     const moving = typeof paused !== "undefined" && paused ? .12 : 1;
 
     ctx.save();
-    ctx.tran
+        ctx.translate(offsetX, offsetY);
+    ctx.scale(scale, scale);
+    drawOcean(ctx, t, moving);
+
+    for (const palm of palms) drawPalm(ctx, palm, t * moving);
+
+    for (const patch of grassPatches) {
+      const gust =
+        Math.sin(t * .72 + patch.phase) * 7 * moving +
+        Math.sin(t * 1.17 + patch.phase * 1.8) * 2.5 * moving;
+
+      for (const blade of patch.blades) {
+        const x = patch.x + blade.x;
+        const y = patch.y + blade.y;
+        const bend = gust + Math.sin(t * 1.4 + blade.phase) * 3 * moving;
+        const tipX = x + blade.lean * blade.height + bend;
+        const tipY = y - blade.height;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.quadraticCurveTo(
+          x + bend * .28,
+          y - blade.height * .58,
+          tipX,
+          tipY
+        );
+        ctx.strokeStyle = blade.shade > .5
+          ? "rgba(210,238,151,.36)"
+          : "rgba(44,119,53,.36)";
+        ctx.lineWidth = 1.2 + blade.shade * 1.2;
+        ctx.lineCap = "round";
+        ctx.stroke();
+      }
+    }
+
+    ctx.restore();
+  }
+
+  drawRoad = function () {
+    oldDrawRoad();
+    drawNature();
+  };
+})();
       
 /* Lightweight steering lean, skid traces, and tire smoke for Battle Racers.
    Load after battle-racers-nature.js. */
