@@ -7509,45 +7509,119 @@ setInterval(() => {
   const oldEnemies=drawEnemies;
   // The background is a photo: the visible road starts well below the sky.
   // These positions are fractions of the actual canvas after cover cropping.
-  const roadSections=[
+
+   const roadSections=[
     [0,.52,.005],[.28,.52,.015],[.36,.50,.035],
     [.44,.46,.08],[.55,.49,.16],[.72,.50,.27],
     [1,.50,.40]
   ];
+  const trafficLanes=[-.56,0,.56];
+
   function roadPosition(y,lane){
     const depth=Math.max(0,Math.min(1,y/canvas.height));
     let a=roadSections[0],b=roadSections[roadSections.length-1];
+
     for(let i=1;i<roadSections.length;i++){
-      if(depth<=roadSections[i][0]){a=roadSections[i-1];b=roadSections[i];break}
+      if(depth<=roadSections[i][0]){
+        a=roadSections[i-1];
+        b=roadSections[i];
+        break;
+      }
     }
+
     const mix=(depth-a[0])/(b[0]-a[0]);
     return canvas.width*(a[1]+(b[1]-a[1])*mix+
       lane*(a[2]+(b[2]-a[2])*mix));
   }
+
   function stayOnRoad(object){
-    if(object.roadLane===undefined)
-      object.roadLane=[-.56,0,.56][Math.floor(Math.random()*3)];
-    object.x=roadPosition(object.y+object.height/2,object.roadLane)-object.width/2;
+    const now=performance.now();
+
+    if(object.roadLane===undefined){
+      object.roadLane=trafficLanes[
+        Math.floor(Math.random()*trafficLanes.length)
+      ];
+      object.targetRoadLane=object.roadLane;
+      object.nextLaneChange=now+1200+Math.random()*1800;
+      object.weavePhase=Math.random()*Math.PI*2;
+    }
+
+    const oldLane=object.roadLane;
+
+    if(typeof object.health==="number" && now>=object.nextLaneChange){
+      const current=trafficLanes.indexOf(object.targetRoadLane);
+      const options=[current-1,current+1].filter(
+        i=>i>=0 && i<trafficLanes.length
+      );
+
+      object.targetRoadLane=
+        trafficLanes[options[Math.floor(Math.random()*options.length)]];
+
+      object.nextLaneChange=
+        now+(object.strong?2600:1500)+Math.random()*1800;
+    }
+
+    if(typeof object.health==="number"){
+      object.roadLane+=(object.targetRoadLane-object.roadLane)*.025;
+    }
+
+    object.roadLaneDelta=object.roadLane-oldLane;
+
+    const weave=typeof object.health==="number"
+      ?Math.sin(now*.0015+object.weavePhase)*.018
+      :0;
+
+    object.x=roadPosition(
+      object.y+object.height/2,
+      object.roadLane+weave
+    )-object.width/2;
   }
+
   drawEnemies=function(){
-    if(!ready(racer)){oldEnemies();return}
+    if(!ready(racer)){
+      oldEnemies();
+      return;
+    }
+
     enemies.forEach(stayOnRoad);
-    ctx.save();ctx.globalAlpha=0;oldEnemies();ctx.restore();
+
+    ctx.save();
+    ctx.globalAlpha=0;
+    oldEnemies();
+    ctx.restore();
+
     enemies.forEach((e,i)=>{
-      // Cars are behind the distant bend until they reach the painted road.
-      if(e.y<canvas.height*.32||e.y>canvas.height-90)return;
+      if(e.y<canvas.height*.32 || e.y>canvas.height-90) return;
+
       const depth=Math.max(0,Math.min(1,e.y/canvas.height));
       const scale=.43+.75*depth;
-      const w=(e.strong?70:58)*scale,h=(e.strong?83:72)*scale;
-      sprite(ctx,e.x+e.width/2-w/2,e.y,w,h,
-        e.strong?"orange":["blue","green","purple"][i%3]);
+      const w=(e.strong?70:58)*scale;
+      const h=(e.strong?83:72)*scale;
+
+      ctx.save();
+      ctx.translate(e.x+e.width/2,e.y+h/2);
+      ctx.rotate(
+        Math.max(-.10,Math.min(.10,-(e.roadLaneDelta||0)*3))
+      );
+
+      sprite(
+        ctx,-w/2,-h/2,w,h,
+        e.strong?"orange":["blue","green","purple"][i%3]
+      );
+
+      ctx.restore();
+
       if(e.strong){
-        ctx.fillStyle="#06131fdc";ctx.fillRect(e.x,e.y-9,e.width,5);
+        ctx.fillStyle="#06131fdc";
+        ctx.fillRect(e.x,e.y-9,e.width,5);
         ctx.fillStyle="#4dff63";
-        ctx.fillRect(e.x,e.y-9,e.width*Math.max(0,e.health/3),5);
+        ctx.fillRect(
+          e.x,e.y-9,e.width*Math.max(0,e.health/3),5
+        );
       }
     });
   };
+  
   const oldPowerUps=drawPowerUps;
   drawPowerUps=function(){
     powerUps.forEach(stayOnRoad);
