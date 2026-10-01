@@ -2915,614 +2915,116 @@ function drawRoad(){
 ========================================== */
 
 function drawCar(){
-
-  const x=car.x;
-  const y=car.y;
-
-  const w=car.width;
-  const h=car.height;
+  const x = car.x, y = car.y;
+  const w = car.width, h = car.height;
 
   ctx.save();
 
-  /* SHADOW */
-
-  ctx.fillStyle=
-  "rgba(0,0,0,.48)";
-
+  ctx.fillStyle = "rgba(0,0,0,.4)";
   ctx.beginPath();
-
-  ctx.ellipse(
-    x+w/2,
-    y+h*.70,
-    w*.70,
-    h*.38,
-    0,
-    0,
-    Math.PI*2
-  );
-
+  ctx.ellipse(x+w/2, y+h*.78, w*.65, h*.18, 0, 0, Math.PI*2);
   ctx.fill();
 
-  /* TIRES */
+  ctx.fillStyle = "#080808";
+  ctx.fillRect(x-5, y+h*.18, 8, h*.25);
+  ctx.fillRect(x+w-3, y+h*.18, 8, h*.25);
+  ctx.fillRect(x-5, y+h*.62, 8, h*.25);
+  ctx.fillRect(x+w-3, y+h*.62, 8, h*.25);
 
-  ctx.fillStyle=
-  "#050505";
+  const body = ctx.createLinearGradient(x, y, x+w, y+h);
+  body.addColorStop(0, "#ffffff");
+  body.addColorStop(.15, carColor);
+  body.addColorStop(.75, carColor);
+  body.addColorStop(1, "#080808");
 
-  ctx.fillRect(
-    x-6,
-    y+h*.18,
-    9,
-    h*.28
-  );
-
-  ctx.fillRect(
-    x+w-3,
-    y+h*.18,
-    9,
-    h*.28
-  );
-
-  ctx.fillRect(
-    x-6,
-    y+h*.62,
-    9,
-    h*.26
-  );
-
-  ctx.fillRect(
-    x+w-3,
-    y+h*.62,
-    9,
-    h*.26
-  );
-
-  /* CAR BODY */
-
-  const body=
-  ctx.createLinearGradient(
-    x,
-    y,
-    x+w,
-    y+h
-  );
-
-  body.addColorStop(
-    0,
-    "#ffffff"
-  );
-
-  body.addColorStop(
-    .13,
-    carColor
-  );
-
-  body.addColorStop(
-    .70,
-    carColor
-  );
-
-  body.addColorStop(
-    1,
-    "#080808"
-  );
-
-  ctx.fillStyle=
-  body;
-
+  ctx.fillStyle = body;
   ctx.beginPath();
-
-  ctx.moveTo(
-    x+w*.22,
-    y
-  );
-
-  ctx.lineTo(
-    x+w*.78,
-    y
-  );
-
-  ctx.quadraticCurveTo(
-    x+w,
-    y+h*.14,
-    x+w,
-    y+h*.48
-  );
-
-  ctx.lineTo(
-    x+w*.90,
-    y+h*.92
-  );
-
-  ctx.lineTo(
-    x+w*.10,
-    y+h*.92
-  );
-
-  ctx.lineTo(
-    x,
-    y+h*.48
-  );
-
-  ctx.quadraticCurveTo(
-    x,
-    y+h*.14,
-    x+w*.22,
-    y
-  );
-
+  ctx.moveTo(x+w*.22, y);
+  ctx.lineTo(x+w*.78, y);
+  ctx.quadraticCurveTo(x+w, y+h*.12, x+w, y+h*.42);
+  ctx.lineTo(x+w*.9, y+h*.94);
+  ctx.lineTo(x+w*.1, y+h*.94);
+  ctx.lineTo(x, y+h*.42);
+  ctx.quadraticCurveTo(x, y+h*.12, x+w*.22, y);
   ctx.closePath();
   ctx.fill();
 
-  /* CENTER RACING STRIPE */
+  ctx.fillStyle = "rgba(255,255,255,.25)";
+  ctx.fillRect(x+w*.46, y+4, w*.08, h*.82);
 
-  ctx.fillStyle=
-  "rgba(255,255,255,.20)";
-
-  ctx.fillRect(
-    x+w*.46,
-    y+4,
-    w*.08,
-    h*.82
-  );
-
-  /* WINDSHIELD */
-
-  const glass=
-  ctx.createLinearGradient(
-    0,
-    y+h*.25,
-    0,
-    y+h*.56
-  );
-
-  glass.addColorStop(
-    0,
-    "#b8efff"
-  );
-
-  glass.addColorStop(
-    1,
-    "#061c2a"
-  );
-
-  ctx.fillStyle=
-  glass;
-
+  ctx.fillStyle = "#12334a";
   ctx.beginPath();
-
-  ctx.roundRect(
-    x+w*.18,
-    y+h*.28,
-    w*.64,
-    h*.27,
-    6
-  );
-
+  ctx.roundRect(x+w*.2, y+h*.27, w*.6, h*.27, 5);
   ctx.fill();
 
-  /* WEAPON TURRET */
-
-  ctx.fillStyle=
-  "#151515";
-
-  ctx.beginPath();
-
-  ctx.roundRect(
-    x+w*.34,
-    y-10,
-    w*.32,
-    20,
-    4
-  );
-
-  ctx.fill();
-
-  ctx.fillStyle=
-  "#c7c7c7";
-
-  ctx.fillRect(
-    x+w*.47,
-    y-25,
-
-        w*.07,
-        19
-      );
-
-      /* HEADLIGHTS */
-
-      ctx.shadowBlur=12;
-
-      ctx.shadowColor=
-      "#ffd400";
-
-      ctx.fillStyle=
-      "#ffe22e";
-
-      ctx.fillRect(
-        x+w*.10,
-        y+h*.10,
-        w*.20,
-        7
-      );
-
-      ctx.fillRect(
-        x+w*.70,
-        y+h*.10,
-        w*.20,
-        7
-      );
-
-      ctx.shadowBlur=0;
-
-      /* SPIKE BUMPER */
-
-      ctx.fillStyle=
-      "#aeb4b8";
-
-      ctx.fillRect(
-        x+w*.10,
-        y+h*.83,
-        w*.80,
-        6
-      );
-
-      ctx.fillStyle=
-      "#e1e1e1";
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        x+w*.10,
-        y+h*.82
-      );
-
-      ctx.lineTo(
-        x-7,
-        y+h*.72
-      );
-
-      ctx.lineTo(
-        x+w*.18,
-        y+h*.76
-      );
-
-      ctx.fill();
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        x+w*.90,
-        y+h*.82
-      );
-
-      ctx.lineTo(
-        x+w+7,
-        y+h*.72
-      );
-
-      ctx.lineTo(
-        x+w*.82,
-        y+h*.76
-      );
-
-      ctx.fill();
-
-      /* MONSTER LABEL */
-
-      ctx.fillStyle=
-      "rgba(0,0,0,.75)";
-
-      ctx.beginPath();
-
-      ctx.roundRect(
-        x+w*.14,
-        y+h*.78,
-        w*.72,
-        15,
-        4
-      );
-
-      ctx.fill();
-
-      ctx.fillStyle=
-      "#ffffff";
-
-      ctx.font=
-      "bold 9px Arial";
-
-      ctx.textAlign=
-      "center";
-
-      ctx.fillText(
-        "MONSTER",
-        x+w/2,
-        y+h*.89
-      );
-
-      /* HEALTH BAR */
-
-      ctx.fillStyle=
-      "rgba(0,0,0,.85)";
-
-      ctx.beginPath();
-
-      ctx.roundRect(
-        x,
-        y-13,
-        w,
-        8,
-        4
-      );
-
-      ctx.fill();
-
-      ctx.fillStyle=
-      "#42ff38";
-
-      ctx.beginPath();
-
-      ctx.roundRect(
-        x+1,
-        y-12,
-        Math.max(
-          0,
-          e.health/3
-        )*(w-2),
-        6,
-        3
-      );
-
-      ctx.fill();
-
-    }else{
-
-      /* NORMAL ENEMY TIRES */
-
-      ctx.fillStyle=
-      "#080808";
-
-      ctx.beginPath();
-      ctx.roundRect(
-        x-5,
-        y+h*.18,
-        7,
-        h*.25,
-        3
-      );
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.roundRect(
-        x+w-2,
-        y+h*.18,
-        7,
-        h*.25,
-        3
-      );
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.roundRect(
-        x-5,
-        y+h*.62,
-        7,
-        h*.25,
-        3
-      );
-      ctx.fill();
-
-      ctx.beginPath();
-      ctx.roundRect(
-        x+w-2,
-        y+h*.62,
-        7,
-        h*.25,
-        3
-      );
-      ctx.fill();
-
-      const palettes=[
-        [
-          "#55c8ff",
-          "#087be8",
-          "#053b91"
-        ],
-        [
-          "#ff6b6b",
-          "#e52b2b",
-          "#7d1010"
-        ],
-        [
-          "#75e88a",
-          "#20a84a",
-          "#0b5c27"
-        ],
-        [
-          "#ffd76a",
-          "#f39b16",
-          "#9a4d05"
-        ],
-        [
-          "#c58cff",
-          "#7a42d8",
-          "#401b86"
-        ]
-      ];
-
-      const palette=
-      palettes[
-        Math.abs(
-          Math.floor(
-            x/35
-          )
-        )%
-        palettes.length
-      ];
-
-      const body=
-      ctx.createLinearGradient(
-        x,
-        y,
-        x+w,
-        y+h
-      );
-
-      body.addColorStop(
-        0,
-        palette[0]
-      );
-
-      body.addColorStop(
-        .35,
-        palette[1]
-      );
-
-      body.addColorStop(
-        1,
-        palette[2]
-      );
-
-      ctx.fillStyle=
-      body;
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        x+w*.18,
-        y+h*.05
-      );
-
-      ctx.lineTo(
-        x+w*.82,
-        y+h*.05
-      );
-
-      ctx.lineTo(
-        x+w*.96,
-        y+h*.24
-      );
-
-      ctx.lineTo(
-        x+w*.88,
-        y+h*.91
-      );
-
-      ctx.lineTo(
-        x+w*.12,
-        y+h*.91
-      );
-
-      ctx.lineTo(
-        x+w*.04,
-        y+h*.24
-      );
-
-      ctx.closePath();
-      ctx.fill();
-
-      /* GLASS */
-
-      const glass=
-      ctx.createLinearGradient(
-        x,
-        y,
-        x,
-        y+h
-      );
-
-      glass.addColorStop(
-        0,
-        "#bcecff"
-      );
-
-      glass.addColorStop(
-        1,
-        "#12334e"
-      );
-
-      ctx.fillStyle=
-      glass;
-
-      ctx.beginPath();
-
-      ctx.roundRect(
-        x+w*.20,
-        y+h*.25,
-        w*.60,
-        h*.27,
-        5
-      );
-
-      ctx.fill();
-
-      /* HOOD STRIPE */
-
-      ctx.fillStyle=
-      "rgba(255,255,255,.20)";
-
-      ctx.fillRect(
-        x+w*.45,
-        y+h*.06,
-        w*.10,
-        h*.18
-      );
-
-      /* HEADLIGHTS */
-
-      ctx.shadowBlur=8;
-
-      ctx.shadowColor=
-      "#eafcff";
-
-      ctx.fillStyle=
-      "#f4fdff";
-
-      ctx.fillRect(
-        x+w*.10,
-        y+h*.08,
-        w*.20,
-        6
-      );
-
-      ctx.fillRect(
-        x+w*.70,
-        y+h*.08,
-        w*.20,
-        6
-      );
-
-      ctx.shadowBlur=0;
-
-      /* BUMPER */
-
-      ctx.fillStyle=
-      "#15191d";
-
-      ctx.fillRect(
-        x+w*.14,
-        y+h*.82,
-        w*.72,
-        6
-      );
-
+  ctx.fillStyle = "#171717";
+  ctx.fillRect(x+w*.36, y-8, w*.28, 14);
+  ctx.fillStyle = "#c8d0d5";
+  ctx.fillRect(x+w*.47, y-22, w*.06, 16);
+
+  ctx.fillStyle = "#ffe85b";
+  ctx.fillRect(x+w*.1, y+h*.08, w*.2, 6);
+  ctx.fillRect(x+w*.7, y+h*.08, w*.2, 6);
+
+  ctx.fillStyle = "#bfc6ca";
+  ctx.fillRect(x+w*.12, y+h*.86, w*.76, 5);
+
+  ctx.restore();
+}
+
+function drawEnemies(){
+  for(let i = enemies.length - 1; i >= 0; i--){
+    const e = enemies[i];
+    e.y += e.speed;
+
+    const x = e.x, y = e.y;
+    const w = e.width, h = e.height;
+    const color = e.strong ? "#d74425" : "#1685d1";
+
+    ctx.save();
+
+    ctx.fillStyle = "#080808";
+    ctx.fillRect(x-5, y+h*.18, 7, h*.25);
+    ctx.fillRect(x+w-2, y+h*.18, 7, h*.25);
+    ctx.fillRect(x-5, y+h*.62, 7, h*.25);
+    ctx.fillRect(x+w-2, y+h*.62, 7, h*.25);
+
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.roundRect(x+w*.12, y+h*.05, w*.76, h*.88, 8);
+    ctx.fill();
+
+    ctx.fillStyle = "#12334a";
+    ctx.beginPath();
+    ctx.roundRect(x+w*.2, y+h*.25, w*.6, h*.27, 5);
+    ctx.fill();
+
+    if(e.strong){
+      ctx.fillStyle = "#111";
+      ctx.fillRect(x, y-10, w, 6);
+      ctx.fillStyle = "#4dff63";
+      ctx.fillRect(x, y-10, w*Math.max(0,e.health/3), 6);
     }
 
     ctx.restore();
 
     if(
-      e.y>
-      canvas.height
+      x < car.x+car.width &&
+      x+w > car.x &&
+      y < car.y+car.height &&
+      y+h > car.y
     ){
-
-      enemies.splice(
-        i,
-        1
-      );
-
+      health = Math.max(0, health-1);
+      addBlastEffect(x+w/2, y+h/2, false);
+      playExplosionSound(false);
+      enemies.splice(i, 1);
+      continue;
     }
 
+    if(y > canvas.height+30){
+      enemies.splice(i, 1);
+    }
   }
-
 }
 
 
