@@ -4261,194 +4261,103 @@ fireButton.addEventListener(
    PLAYER BULLETS
 ========================================== */
 
+
 function drawBullets(){
+  for(let i = bullets.length - 1; i >= 0; i--){
+    const b = bullets[i];
 
-  for(
-    let i=
-      bullets.length-1;
-    i>=0;
-    i--
-  ){
-
-    const b=
-      bullets[i];
-
-    b.x+=
-      b.vx??0;
-
-    b.y+=
-      b.vy??-bulletSpeed;
+    b.x += b.vx || 0;
+    b.y += b.vy || -bulletSpeed;
 
     ctx.save();
-
-    /* DIFFERENT BULLET GRAPHICS */
-
-    if(
-      b.weapon==="plasma"
-    ){
-
-      ctx.shadowBlur=16;
-      ctx.shadowColor="#d94cff";
-      ctx.fillStyle="#ef9cff";
-
-      ctx.beginPath();
-
-      ctx.arc(
-        b.x+
-        b.width/2,
-
-        b.y+
-        b.height/2,
-
-        5,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-    }else if(
-      b.weapon==="laser"
-    ){
-
-      ctx.shadowBlur=18;
-      ctx.shadowColor="#25eaff";
-      ctx.fillStyle="#a8f8ff";
-
-      ctx.fillRect(
-        b.x,
-        b.y,
-        b.width,
-        b.height
-      );
-
-    }else if(
-      b.weapon==="champion"
-    ){
-
-      ctx.shadowBlur=20;
-      ctx.shadowColor="#ffd500";
-      ctx.fillStyle="#fff26b";
-
-      ctx.beginPath();
-
-      ctx.arc(
-        b.x+
-        b.width/2,
-
-        b.y+
-        b.height/2,
-
-        6,
-        0,
-        Math.PI*2
-      );
-
-      ctx.fill();
-
-    }else{
-
-      ctx.shadowBlur=9;
-      ctx.shadowColor="#ffb000";
-      ctx.fillStyle="#ffe640";
-
-      ctx.fillRect(
-        b.x,
-        b.y,
-        b.width,
-        b.height
-      );
-
-    }
-
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#ffb000";
+    ctx.fillStyle = b.weapon === "laser" ? "#a8f8ff" : "#ffe640";
+    ctx.fillRect(b.x, b.y, b.width || 6, b.height || 16);
     ctx.restore();
 
-    let hit=false;
-
-    /* HIT BOSS */
-
+    // Hit the boss
     if(
       boss &&
-
-      b.x<
-      boss.x+
-      boss.width &&
-
-      b.x+
-      b.width>
-      boss.x &&
-
-      b.y<
-      boss.y+
-      boss.height &&
-
-      b.y+
-      b.height>
-      boss.y
+      b.x < boss.x + boss.width &&
+      b.x + b.width > boss.x &&
+      b.y < boss.y + boss.height &&
+      b.y + b.height > boss.y
     ){
+      boss.health -= bulletDamage;
+      addImpactSpark(b.x, b.y);
+      bullets.splice(i, 1);
 
-      boss.health-=
-        bulletDamage;
-
-      addImpactSpark(
-        b.x,
-        b.y
-      );
-
-      bullets.splice(
-        i,
-        1
-      );
-
-      hit=true;
-
-      if(
-        boss.health<=0
-      ){
-
-        const reward=
-          boss.reward;
-
-        const scoreReward=
-          boss.scoreReward;
+      if(boss.health <= 0){
+        const defeatedBoss = boss;
+        boss = null;
+        coins += defeatedBoss.reward || 0;
+        score += defeatedBoss.scoreReward || 0;
 
         addBlastEffect(
-          boss.x+
-          boss.width/2,
-
-          boss.y+
-          boss.height/2,
-
+          defeatedBoss.x + defeatedBoss.width / 2,
+          defeatedBoss.y + defeatedBoss.height / 2,
           true
         );
+        playExplosionSound(true);
+        localStorage.setItem("coins", coins);
 
-        playExplosionSound(
-          true
-        );
-const victoryMessage = document.createElement("div");
-victoryMessage.textContent = "🏆 BOSS DEFEATED! 🏆";
-victoryMessage.style.cssText = "position:fixed;left:50%;top:32%;transform:translate(-50%,-50%);z-index:320;color:#ffe64a;font:bold clamp(18px,6vw,30px) Arial;text-shadow:0 0 12px #ff7800,3px 3px #000;white-space:nowrap;pointer-events:none;";
-document.body.appendChild(victoryMessage);
-setTimeout(() => victoryMessage.remove(), 1800);
+        const message = document.createElement("div");
+        message.textContent = "🏆 BOSS DEFEATED! 🏆";
+        message.style.cssText =
+          "position:fixed;left:50%;top:32%;transform:translateX(-50%);" +
+          "z-index:320;color:#ffe64a;font:bold 26px Arial;" +
+          "text-shadow:0 0 12px #ff7800;pointer-events:none";
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 1800);
+      }
+      continue;
+    }
 
-  ctx.shadowBlur=0;
+    // Hit an enemy car
+    let hitEnemy = false;
+    for(let j = enemies.length - 1; j >= 0; j--){
+      const e = enemies[j];
 
-  ctx.font=
-    "18px Arial";
+      if(
+        b.x < e.x + e.width &&
+        b.x + b.width > e.x &&
+        b.y < e.y + e.height &&
+        b.y + b.height > e.y
+      ){
+        e.health -= bulletDamage;
+        addImpactSpark(b.x, b.y);
+        bullets.splice(i, 1);
+        hitEnemy = true;
 
-  ctx.fillStyle=
-    "#bdeaff";
+        if(e.health <= 0){
+          addBlastEffect(
+            e.x + e.width / 2,
+            e.y + e.height / 2,
+            false
+          );
+          playExplosionSound(false);
+          enemies.splice(j, 1);
+          score += 10;
+          coins += 1;
+          localStorage.setItem("coins", coins);
+        }
+        break;
+      }
+    }
 
-  ctx.fillText(
-    "Press ▶ to continue",
-    canvas.width/2,
-    canvas.height/2+35
-  );
+    if(hitEnemy) continue;
 
-  ctx.restore();
-
+    if(
+      b.y < -30 ||
+      b.y > canvas.height + 30 ||
+      b.x < -30 ||
+      b.x > canvas.width + 30
+    ){
+      bullets.splice(i, 1);
+    }
+  }
 }
-
 
 /* ==========================================
    GAME OVER
