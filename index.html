@@ -7869,33 +7869,117 @@ setInterval(() => {
       g.lineCap = "round";
       g.stroke();
 
-      g.globalAlpha = .46;
-      g.setLineDash([18, 22, 8, 28]);
-      g.lineDashOffset = -phase * 24;
-      g.lineWidth = 3.5;
-      g.stroke();
-      g.setLineDash([]);
-      g.globalAlpha = 1;
+function drawOcean(g, t, moving) {
+  const time = t * moving;
+
+  // Shoreline points, from the distant cove down to the beach.
+  const shore = [
+    [296, 624], [365, 651], [415, 685], [457, 720],
+    [496, 756], [527, 790], [550, 825]
+  ];
+
+  function coastX(y) {
+    for (let i = 1; i < shore.length; i++) {
+      if (y <= shore[i][0]) {
+        const a = shore[i - 1];
+        const b = shore[i];
+        const mix = (y - a[0]) / (b[0] - a[0]);
+        return a[1] + (b[1] - a[1]) * mix;
+      }
     }
-
-    // Small highlights travel with the swells.
-    for (let i = 0; i < 56; i++) {
-      const phase = i * 2.399 + t * moving * (1.2 + (i % 5) * .12);
-      const x = 635 + ((i * 47 + t * moving * (9 + i % 7) + 230) % 250);
-      const y = 315 + ((i * 31 + Math.sin(phase) * 12 + t * moving * 5) % 235);
-
-      g.globalAlpha = .08 + .12 * (.5 + .5 * Math.sin(phase * 1.6));
-      g.strokeStyle = i % 3 === 0 ? "#ffffff" : "#a8eff2";
-      g.lineWidth = 1.2 + (i % 3) * .45;
-      g.beginPath();
-      g.moveTo(x, y);
-      g.quadraticCurveTo(x + 7, y - 2, x + 15, y + 1);
-      g.stroke();
-    }
-
-    g.restore();
+    return shore[shore.length - 1][1];
   }
 
+  g.save();
+
+  // Keep the animated waves inside the ocean area of the background.
+  g.beginPath();
+  g.moveTo(624, 296);
+  g.lineTo(863, 270);
+  g.lineTo(863, 555);
+  g.lineTo(825, 550);
+  g.lineTo(790, 527);
+  g.lineTo(756, 496);
+  g.lineTo(720, 457);
+  g.lineTo(685, 415);
+  g.lineTo(651, 365);
+  g.closePath();
+  g.clip();
+
+  // Wind-driven swells move across the open water.
+  for (let row = 0; row < 12; row++) {
+    const phase = time * 1.7 + row * 1.15;
+    const baseY = 294 + row * 24;
+
+    g.beginPath();
+    for (let x = 610; x <= 900; x += 5) {
+      const y =
+        baseY +
+        Math.sin(x * 0.035 + phase) * 5 +
+        Math.sin(x * 0.016 - phase * 0.8) * 3;
+
+      if (x === 610) g.moveTo(x, y);
+      else g.lineTo(x, y);
+    }
+
+    g.strokeStyle = row % 3 === 0
+      ? "rgba(225,252,251,.25)"
+      : "rgba(95,205,216,.15)";
+    g.lineWidth = row % 3 === 0 ? 2.5 : 1.7;
+    g.stroke();
+  }
+
+  // Each foamy wave rolls toward the shore, then retreats.
+  for (let row = 0; row < 7; row++) {
+    const phase = time * 1.35 + row * 1.05;
+    const surge = (Math.sin(phase) + 1) / 2;
+    const distanceFromShore = 18 + (1 - surge) * 72 + row * 18;
+
+    g.beginPath();
+    for (let y = 290; y <= 560; y += 4) {
+      const x =
+        coastX(y) +
+        distanceFromShore +
+        Math.sin(y * 0.035 + phase) * 5 +
+        Math.sin(y * 0.012 - phase) * 3;
+
+      if (y === 290) g.moveTo(x, y);
+      else g.lineTo(x, y);
+    }
+
+    // Soft turquoise water follows the moving foam.
+    g.strokeStyle = `rgba(126,224,225,${0.08 + surge * 0.12})`;
+    g.lineWidth = 13;
+    g.lineCap = "round";
+    g.stroke();
+
+    // Bright, broken foam crest.
+    g.strokeStyle = `rgba(240,255,250,${0.18 + surge * 0.38})`;
+    g.lineWidth = 2.5;
+    g.setLineDash([16, 13, 7, 20]);
+    g.lineDashOffset = -phase * 18;
+    g.stroke();
+    g.setLineDash([]);
+  }
+
+  // Small wind-blown reflections skim over the water.
+  for (let i = 0; i < 64; i++) {
+    const phase = i * 2.399 + time * (1.8 + (i % 5) * 0.2);
+    const x = 635 + ((i * 47 + time * (15 + i % 9)) % 250);
+    const y = 310 + ((i * 31 + Math.sin(phase) * 14) % 235);
+
+    g.globalAlpha = 0.1 + 0.16 * (0.5 + 0.5 * Math.sin(phase));
+    g.strokeStyle = i % 3 === 0 ? "#ffffff" : "#a8eff2";
+    g.lineWidth = 1.4;
+    g.beginPath();
+    g.moveTo(x, y);
+    g.quadraticCurveTo(x + 9, y - 2, x + 19, y + 1);
+    g.stroke();
+  }
+
+  g.restore();
+}
+      
   function drawNature() {
     if (!scene.complete || !scene.naturalWidth) return;
 
