@@ -6947,8 +6947,39 @@ setInterval(() => {
     speedText.textContent="🏎 SPEED "+Math.round(driveSpeed*100)+"%";
   };
 })();
+
+<script>
+const oldPlayButton = document.getElementById("playButton");
+const workingPlayButton = oldPlayButton.cloneNode(true);
+oldPlayButton.replaceWith(workingPlayButton);
+
+workingPlayButton.addEventListener("click", () => {
+  resetGame();
+  gameStarted = true;
+  countdownActive = true;
+  startMenu.style.display = "none";
+  countdownOverlay.style.display = "flex";
+
+  let count = 3;
+  countdownText.textContent = count;
+
+  const timer = setInterval(() => {
+    count--;
+
+    if (count > 0) {
+      countdownText.textContent = count;
+    } else if (count === 0) {
+      countdownText.textContent = "GO!";
+    } else {
+      clearInterval(timer);
+      countdownOverlay.style.display = "none";
+      countdownActive = false;
+    }
+  }, 850);
+});
 </script>
 
+  
 </body>
 </html>
 
