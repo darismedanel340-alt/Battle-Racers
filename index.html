@@ -6449,8 +6449,14 @@ setInterval(() => {
     speedText.textContent="🏎 SPEED "+Math.round(driveSpeed*100)+"%";
   };
 })();
-</script>
+  </script>
 
+<script>
+const oldPlay = document.getElementById("playButton");
+const newPlay = oldPlay.cloneNode(true);
+oldPlay.replaceWith(newPlay);
+newPlay.addEventListener("click", startCountdown);
+</script>
 
 </body>
 </html>
