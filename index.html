@@ -5647,24 +5647,6 @@ setInterval(() => {
   `;
   document.head.appendChild(style);
 
-  // Double the bitmap resolution without changing the game's CSS-pixel coordinates.
-  try{
-    const w=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,"width");
-    const h=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,"height");
-    if(w?.set&&h?.set){
-      const logical={w:canvas.width,h:canvas.height};
-      const ratio=()=>Math.min(2,Math.max(1,window.devicePixelRatio||1));
-      Object.defineProperties(canvas,{
-        width:{configurable:true,get(){return logical.w},set(v){
-          logical.w=+v;w.set.call(canvas,Math.round(v*ratio()));
-          ctx.setTransform(ratio(),0,0,ratio(),0,0)}},
-        height:{configurable:true,get(){return logical.h},set(v){
-          logical.h=+v;h.set.call(canvas,Math.round(v*ratio()));
-          ctx.setTransform(ratio(),0,0,ratio(),0,0)}}
-      });
-      resizeGame();
-    }
-  }catch(error){console.warn("Canvas resolution:",error)}
 
   const oldRoad=drawRoad;
   drawRoad=function(){
@@ -5760,7 +5742,7 @@ setInterval(() => {
     ctx.save();ctx.globalAlpha=0;oldEnemies();ctx.restore();
     enemies.forEach((e,i)=>{
       // Cars are behind the distant bend until they reach the painted road.
-      if(e.y<canvas.height*.32||e.y>canvas.height-90)return;
+    if(e.y<canvas.height*.20||e.y>canvas.height-90)return;
       const depth=Math.max(0,Math.min(1,e.y/canvas.height));
       const scale=.43+.75*depth;
       const w=(e.strong?70:58)*scale,h=(e.strong?83:72)*scale;
@@ -6028,7 +6010,8 @@ setInterval(() => {
     const offsetX = (w - scene.naturalWidth * scale) / 2;
     const offsetY = (h - scene.naturalHeight * scale) / 2;
     const t = (performance.now() - startedAt) / 1000;
-    const moving = typeof paused !== "undefined" && paused ? .12 : 1;
+  const moving = 1;
+    
 
     ctx.save();
     ctx.translate(offsetX, offsetY);
@@ -6462,6 +6445,26 @@ const oldPlay = document.getElementById("playButton");
 const newPlay = oldPlay.cloneNode(true);
 oldPlay.replaceWith(newPlay);
 newPlay.addEventListener("click", startCountdown);
+
+  const pauseOld = document.getElementById("pauseButton");
+const pauseNew = pauseOld.cloneNode(true);
+pauseOld.replaceWith(pauseNew);
+
+pauseNew.addEventListener("click", function(e){
+  e.preventDefault();
+  e.stopPropagation();
+  if(!gameStarted || countdownActive || health <= 0) return;
+  paused = !paused;
+  pauseNew.textContent = paused ? "▶" : "⏸";
+  stopFiring();
+});
+
+const resetBeforePauseFix = resetGame;
+resetGame = function(){
+  resetBeforePauseFix();
+  pauseNew.textContent = "⏸";
+};
+  
 </script>
 
 </body>
